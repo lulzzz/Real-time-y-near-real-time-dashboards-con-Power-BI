@@ -1,6 +1,10 @@
 # Dashboards en real-time y near real-time con Power BI
 
-Texto
+En estas líneas intentaremos explicar los conceptos y detallar los pasos para realizar dashboards con Power BI en tiempo real y casi tiempo real. 
+
+Además de las series temporales, hay numerosos escenarios donde la posibilidad de contar con información en tiempo real o con unos pocos segundos de retardo es fundamental para la toma de decisiones.
+
+
 ## Resumen
 Texto
 
@@ -31,3 +35,6 @@ Describir la parte de Power BI, datasets, etc.
 ## Recomendaciones
 
 ## Conclusiones
+
+## Referencias
+bullets de links a cosas relacionadas.
