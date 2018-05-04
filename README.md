@@ -28,9 +28,10 @@ Explicar aquí la conveniencia o no de tener datos en real time y near real time
 
 ## Arquitectura de alto nivel
 Mostrar aquí el diagrama y los principales componentes
+![Diagrama de arquitectura](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/diagram.JPG?raw=true)
 
 ## Ingestión de datos
-Desarrollar paso a paso cómo crear un event hubs e intercalar conceptos y tips
+Desarrollar paso a paso cómo crear un event hubs, la aplicación cliente e intercalar conceptos y tips
 
 ## Análisis de streaming data
 Desarrollar paso a paso una query en Stream Analytics
