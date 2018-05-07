@@ -57,10 +57,26 @@ Desarrollar paso a paso cómo crear un event hubs, la aplicación cliente e inte
 Desarrollar paso a paso una query en Stream Analytics
 
 ## Visualización
+La visualización de datos en real-time implica la mínima latencia posible, desde que el evento es producido hasta que es visualizado. Esta latencia es la suma de las latencias acumuladas en cada etapa: el tiempo de detección del evento en el productor, el tiempo de transferencia, el tiempo de encolamiento, el tiempo de procesamiento, el tiempo de envío e inserción en el dataset del dashboard y el tiempo de refresco en el mismo.
+
+Normalmente las visualizaciones de Power BI requieren algún tipo de cálculo o procesamiento, por ejemplo, un diagrama de pie, necesita sumarizar campos por categorías y calcular los porcentajes de cada una para poder diagramarlos. La suma del esfuerzo de cada visualización puede ser muy costoso para un dashboard en términos de tiempo de procesamiento, por tanto, para tener una visualización actualizada en real-time, se han acotado la variedad de visualizaciones. Básicamente los tiles que se pueden agregar en real-time son visualizaciones simples de series temporales. El resto de las visualizaciones podrán ser empleadas con una frecuencia de actualización menor, que conocemos como near real-time.
 
 ### Real-time
+En esta solución, la latencia acumulada entre el momento del encolamiento hasta el del refresco en el dasboard es del orden de los **2 segundos**.
+
+![Agregar nuevo tile](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/custom-streaming-data.png?raw=true)
+
+![Agregar nuevo tile](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/your-streaming-dataset.png?raw=true)
+
+Seleccione el tipo de visualización y continue la configuración de acuerdo al mismo.
+
+![Agregar nuevo tile](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/pbi-dashboard-fraudulent-calls-finished.png?raw=true)
+
+Estas visualizaciones se actualizan una vez por segundo.
 
 ### Near real-time
+La latencia para la presentación de datos en near real-time va de entre los **5 y los 8 segundos** aproximadamente.
+
 Una vez que Stream Analytics ha creado el dataset, éste puede ser utilizado en reportes convencionales empleando todos las visualizaciones disponibles. Notar sin embargo que los reportes no se refrescan automáticamente. Los reportes están concebidos para ser interactivos, es decir, para que el usuario realice operaciones de filtrado, drill down y búsquedas en forma manual. Para obtener un tile actualizado en near real-time éste debe ser anclado en un dashboard.
 
 Para ello, marque el ícono de "Pin" en la visualización que desea exponer:
