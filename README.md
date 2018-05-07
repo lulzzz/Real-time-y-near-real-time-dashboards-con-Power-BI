@@ -2,7 +2,7 @@
 
 Power BI admite como origen de datos un dataset que se alimente en modo streaming. Esta secuencia de datos puede ser visualizada en dashboards en forma desatendida, es decir, sin necesidad de hacer refresco de los tiles.
 
-En estas líneas intentaremos explicar los conceptos y detallar los pasos para realizar dashboards con Power BI en tiempo real y casi tiempo real.
+En estas líneas se explicarán los conceptos y detalle de los pasos para realizar dashboards con Power BI en real-time y near real-time.
 
 ## Resumen
 Además de las series temporales, hay numerosos escenarios donde la posibilidad de contar con información en tiempo real o con unos pocos segundos de retardo es fundamental para la toma de decisiones.
@@ -14,7 +14,7 @@ A continuación se analiza un escenario genérico y se describen los pasos para 
 
 ## Software y herramientas
 
-* Subscripción de Azure
+* [Subscripción de Azure](https://azure.microsoft.com/es-es/free)
 * [Visual Studio](https://www.visualstudio.com)
 * [Azure Event Hub](https://azure.microsoft.com/en-us/services/event-hubs/)
 * [Azure Stream Analytics](https://azure.microsoft.com/en-us/services/stream-analytics/)
@@ -29,15 +29,19 @@ Como parte del ciclo de vida de desarrollo del proyecto propio que se esté ejec
 A continuación se desarrollan brevemente algunas recomendaciones y buenas prácticas sobre estas dos actividades.
 
 ## Gestión de requerimientos
-Explicar aquí la conveniencia o no de tener datos en real time y near real time. Los escenarios en los que conviene tener esta información, etc.
+Es importante hacer una consideración de alto nivel con respecto a los requisitos que son evaluados para la visualización de información en tiempo real. La necesidad de contar con datos actualizados no es condición necesaria para implementar una solución de streaming de datos. Muchas veces una solución de micro-batch es más adecuada si se precisan cálculos complejos, contrastes con datos históricos, cruces de información con múltiples orígenes de datos históricas, etc. **La visualización de dashboards en real-time está más asociada con los últimos datos más que con una fuente de datos actualizada.**
 
 ## Arquitectura de alto nivel
-Mostrar aquí el diagrama y los principales componentes
+Como se mencionó anteriormente hablar de real-time o near real-time implica un modelo dinámico diseñado para tener en cuenta la menor latencia posible en el flujo de datos. Las técnicas y herramientas empleadas aquí siguen el flujo hot-path de una arquitectura [lambda](https://en.wikipedia.org/wiki/Lambda_architecture), tal como se describe a continuación.
 
 ![Diagrama de arquitectura](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/diagram.JPG?raw=true)
 
 ## Producción de eventos
+<<<<<<< HEAD
 Típicamente los eventos son generados por dispositivos o aplicaciones en forma independiente a través del tiempo. Para imitar este flujo de datos se incluye el código fuente de un emulador de eventos con el que se puede completar el ejercicio de visualización en real-time [(Ver carpeta EventHubSender](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/tree/master/EventHubSender) para el código fuente completo)
+=======
+Típicamente los eventos son generados por dispositivos o aplicaciones en forma independiente a través del tiempo. Para imitar este flujo de datos incluimos el código fuente de un emulador de eventos con el que se podrá completar el ejercicio de visualización en real-time [(Ver carpeta EventHubSender)](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/tree/master/EventHubSender) para el codigo fuente completo.
+>>>>>>> 6e765200527acdf988672ccdd5a907828726b1c6
 
 ### Datos aleatorios generados ###
 Se generan datos aleatorios de un barco con los siguientes atributos:
@@ -194,9 +198,10 @@ Indique un dashboard existente o cree uno nuevo en donde la visualización será
 
 ![Seleccionar o crear un dashboard](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/pbi_pintoanotherdash.png?raw=true)
 
-## Recomendaciones
+> Importante: si el dataset fue definido manualmente (y no a través de Stream Analytics), se debe activar la opción "Historic data analysis", en caso contrario no se podrán crear reportes con ese dataset.
+> ![Seleccionar o crear un dashboard](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/real-time-streaming_0c.png?raw=true)
 
-## Conclusiones
+## Recomendaciones
 
 ## Referencias
 bullets de links a cosas relacionadas.
