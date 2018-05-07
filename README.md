@@ -37,19 +37,18 @@ Mostrar aquí el diagrama y los principales componentes
 ![Diagrama de arquitectura](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/diagram.JPG?raw=true)
 
 ## Producción de eventos
-<<<<<<< HEAD
-Típicamente los eventos son generados por dispositivos o aplicaciones en forma independiente a través del tiempo. Para imitar este flujo de datos incluimos el código fuente de un emulador de eventos con el que se podrá completar el ejercicio de visualización en real-time [(Ver carpeta EventHubSender)](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/tree/master/EventHubSender) para el codigo fuente completo.
+Típicamente los eventos son generados por dispositivos o aplicaciones en forma independiente a través del tiempo. Para imitar este flujo de datos se incluye el código fuente de un emulador de eventos con el que se puede completar el ejercicio de visualización en real-time [(Ver carpeta EventHubSender](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/tree/master/EventHubSender) para el código fuente completo)
 
 ### Datos aleatorios generados ###
-Generamos datos aleatorios de un barco con los siguientes atributos:
-- Temperatura de 4 bodegas (valores numericos que van de 15 - 20)
-- Velocidad de barco (valores numericos que van de 80-120)
-- Latitud y longitud del barco (valores numericos que representan una posicion en el mar caribe cerca a Cartagena, Colombia)
-- Tiempo general, hora, minuto y segundo en el que se envian los datos
-- ID de barco (valores numericos que van de 1-5) 
+Se generan datos aleatorios de un barco con los siguientes atributos:
+- Temperatura de 4 bodegas (valores numéricos que van de 15 - 20)
+- Velocidad de barco (valores numéricos que van de 80-120)
+- Latitud y longitud del barco (valores numéricos que representan una posición en el mar Caribe cerca a Cartagena, Colombia)
+- Tiempo general, hora, minuto y segundo en el que se envían los datos
+- ID de barco (valores numéricos que van de 1-5) 
 
-### Codigo fuente ###
-Contamos con un proyecto de consola hecho en C# que cumple con las siguientes premisa de que envie N eventos generados cada M milisegundos. Para poder usar el emulador solo es necesario obtener una cadena de conexion a un EventHub Namespace y el nombre de un EventHub que exista dentro de ese Namespace. Ingresa al archivo <b>App.Config</b> en el codigo fuente y pega dichos valores:
+### Código fuente ###
+El proyecto de consola hecho en C# cumple con la premisa de que se envíen N eventos generados cada M milisegundos y funciona toda vez que una cadena de conexión a un EventHub Namespace y el nombre de un EventHub que exista dentro de ese Namespace hayan sido definidos en el archivo <b>App.Config</b>:
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -61,10 +60,10 @@ Contamos con un proyecto de consola hecho en C# que cumple con las siguientes pr
 </configuration>
 ```
 
-El codigo fuente del emulador de eventos cuenta con solo un archivo llamado <b>Program.cs</b> que contiene toda la logica. Se cuentan con 4 atributos principales:
-- Numero de eventos a enviar
+El código fuente del emulador de eventos cuenta con solo un archivo <b>Program.cs</b> que contiene toda la lógica. Se cuentan con 4 atributos principales:
+- Número de eventos a enviar
 - Milisegundos que deben pasar entre cada evento
-- Cadena de conexion de un EventHub Namespace
+- Cadena de conexión de un EventHub Namespace
 - Nombre de un Event Hub
 
 ```csharp
@@ -77,7 +76,7 @@ class Program
 }
 ```
 
-El metodo principal consta solo de 3 lineas en las que se define el numero de eventos, milisegundos entre eventos y llamada al metodo <b>SendEvents()</b> que se encarga de mandar los datos al servicio de EventHub:
+El método principal consta de 3 lineas de código en las que se definen el número de eventos, milisegundos entre eventos y llamada al método <b>SendEvents()</b> que se encarga de mandar datos al servicio de EventHub:
 ```csharp
 static void Main(string[] args)
 {
@@ -87,10 +86,10 @@ static void Main(string[] args)
 }
 ```
 
-El metodo <b>SendEvents</b> esta compuesto de 3 partes diferenciadas:
+El método <b>SendEvents</b> está compuesto de 3 partes diferenciadas:
 - Un constructor de cliente de EventHub
-- Una llamada a un metodo que genera datos aleatorios
-- El envio de dicha data generada a EventHub
+- Una llamada al método <b>PrepareRandomData</b> que genera datos aleatorios
+- El envío de dichos datos generados a EventHub
 ```csharp
 private static async Task SendEvents()
 {
@@ -118,7 +117,7 @@ private static async Task SendEvents()
 }
 ```
 
-Finalmente, el metodo <b>PrepareRandomData</b> genera los datos de temperatura, latitud, longitud, tiempo y ID para un barco ficticio y devuelve una cadena con formato JSON para que dicha cadena sea enviada a EventHub:
+Finalmente, el metodo <b>PrepareRandomData</b> genera los datos de temperatura, latitud, longitud, tiempo y ID para un barco ficticio y devuelve una cadena con formato JSON:
 ```csharp
 private static string PrepareRandomData(Random ran)
 {
@@ -150,13 +149,6 @@ private static string PrepareRandomData(Random ran)
     return message;
 }
 ```
-=======
-Cualquier artefacto que envíe datos al Event Hub es considerado un productor de eventos. Estos artefactos son típicamente dispositivos o aplicaciones que envían información a través del tiempo. Los eventos son transmitidos mediante HTTPS o AMQP. Para imitar este flujo de datos incluimos el código fuente de un emulador de eventos con el que se podrá completar el ejercicio de visualización en real-time.
-
-[Event Hubs API Overview](https://docs.microsoft.com/es-es/azure/event-hubs/event-hubs-dotnet-framework-api-overview)
-
-INCLUIR AQUÍ DESCRIPCIÓN DEL CÓDIGO FUENTE Y MODO DE USO)
->>>>>>> 0d5fb579e2f3902deca8fd7076d398a495ff9504
 
 ## Ingestión y encolamiento
 Azure Event Hubs es un servicio para la ingestión masiva de eventos, en este tutorial se empleará como vía de entrada para los datos. Event Hubs posee varias características interesantes para soportar múltiples escenarios de control de flujo, contextos de publicación-subscripción, etc. Más información [aquí](https://docs.microsoft.com/es-es/azure/event-hubs/event-hubs-what-is-event-hubs).
