@@ -37,6 +37,7 @@ Mostrar aquí el diagrama y los principales componentes
 ![Diagrama de arquitectura](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/diagram.JPG?raw=true)
 
 ## Producción de eventos
+<<<<<<< HEAD
 Típicamente los eventos son generados por dispositivos o aplicaciones en forma independiente a través del tiempo. Para imitar este flujo de datos incluimos el código fuente de un emulador de eventos con el que se podrá completar el ejercicio de visualización en real-time [(Ver carpeta EventHubSender)](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/tree/master/EventHubSender) para el codigo fuente completo.
 
 ### Datos aleatorios generados ###
@@ -149,6 +150,13 @@ private static string PrepareRandomData(Random ran)
     return message;
 }
 ```
+=======
+Cualquier artefacto que envíe datos al Event Hub es considerado un productor de eventos. Estos artefactos son típicamente dispositivos o aplicaciones que envían información a través del tiempo. Los eventos son transmitidos mediante HTTPS o AMQP. Para imitar este flujo de datos incluimos el código fuente de un emulador de eventos con el que se podrá completar el ejercicio de visualización en real-time.
+
+[Event Hubs API Overview](https://docs.microsoft.com/es-es/azure/event-hubs/event-hubs-dotnet-framework-api-overview)
+
+INCLUIR AQUÍ DESCRIPCIÓN DEL CÓDIGO FUENTE Y MODO DE USO)
+>>>>>>> 0d5fb579e2f3902deca8fd7076d398a495ff9504
 
 ## Ingestión y encolamiento
 Azure Event Hubs es un servicio para la ingestión masiva de eventos, en este tutorial se empleará como vía de entrada para los datos. Event Hubs posee varias características interesantes para soportar múltiples escenarios de control de flujo, contextos de publicación-subscripción, etc. Más información [aquí](https://docs.microsoft.com/es-es/azure/event-hubs/event-hubs-what-is-event-hubs).
@@ -163,10 +171,20 @@ Desarrollar paso a paso cómo crear un event hubs, la aplicación cliente e inte
 ## Análisis de streaming de datos
 Desarrollar paso a paso una query en Stream Analytics
 
-## Almacenamiento y batch-processing
-
 ## Visualización
-Describir la parte de Power BI, datasets, etc.
+
+### Real-time
+
+### Near real-time
+Una vez que Stream Analytics ha creado el dataset, éste puede ser utilizado en reportes convencionales empleando todos las visualizaciones disponibles. Notar sin embargo que los reportes no se refrescan automáticamente. Los reportes están concebidos para ser interactivos, es decir, para que el usuario realice operaciones de filtrado, drill down y búsquedas en forma manual. Para obtener un tile actualizado en near real-time éste debe ser anclado en un dashboard.
+
+Para ello, marque el ícono de "Pin" en la visualización que desea exponer:
+
+![Anclar un tile](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/power-bi-pin.png?raw=true)
+
+Indique un dashboard existente o cree uno nuevo en donde la visualización será publicada:
+
+![Seleccionar o crear un dashboard](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/pbi_pintoanotherdash.png?raw=true)
 
 ## Recomendaciones
 
