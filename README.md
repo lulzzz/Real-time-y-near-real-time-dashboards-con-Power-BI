@@ -158,10 +158,6 @@ private static string PrepareRandomData(Random ran)
 Azure Event Hubs es un servicio para la ingestión masiva de eventos, en este tutorial se empleará como vía de entrada para los datos. Event Hubs posee varias características interesantes para soportar múltiples escenarios de control de flujo, contextos de publicación-subscripción, etc. Más información [aquí](https://docs.microsoft.com/es-es/azure/event-hubs/event-hubs-what-is-event-hubs).
 
 ### Crear un Event Hub en Azure
-1. Inicie sesión en [Azure Portal](https://portal.azure.com/)
-2. Inidque **Crear un recurso**
-
-
 Desarrollar paso a paso cómo crear un event hubs, la aplicación cliente e intercalar conceptos y tips
 
 ## Análisis de streaming de datos
