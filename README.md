@@ -212,10 +212,63 @@ private static string PrepareRandomData(Random ran)
     return message;
 }
 ```
-Desarrollar paso a paso cómo crear un event hubs, la aplicación cliente e intercalar conceptos y tips
-
 ## Análisis de streaming de datos
-Desarrollar paso a paso una query en Stream Analytics
+Ahora que se cuentan con datos generados listos para ser consumidos desde Event Hub se procede a consumirlos desde el servicio de Stream Analytics.
+
+### Azure Stream Analytics
+Es un servicio de procesamiento de eventos en tiempo real sobre datos de streaming que ademas permite aplicar calculos o modificaciones a los eventos entrantes:
+
+![Stream Analytics en accion](https://docs.microsoft.com/es-es/azure/stream-analytics/media/stream-analytics-introduction/stream_analytics_intro_pipeline.png)
+
+Por dentro, Stream Analytics esta compuesto por multiples componentes de entre los cuales se cuentan con 3 principales:
+- Entradas de datos (Inputs)
+- Seccion de consulta de datos (Query)
+- Salidas de datos (Outputs)
+
+>Nota. Para este tutorial se tiene a Event Hub como entrada de datos y Power BI como salida de datos mientras que en la seccion de consulta / modificacion de datos no se hace ninguna alteracion.
+
+Para mas informacion [consulte la documentacion oficial](https://docs.microsoft.com/es-es/azure/stream-analytics/stream-analytics-introduction).
+
+### Creacion del servicio de Azure Stream Analytics
+En el portal de Azure se debe buscar "Stream Analytics" en la sección <b>Create a resource</b>: 
+
+![Creación de Stream Analytics](images/ASA1.PNG)
+
+#### ¿Que son Streaming Units?
+Son la representancion de unidades de computo consumidas cuando se ejecuta una tarea. En esencia, un Streaming Unit es la manera relativa de medir la mezcla de memoria RAM, CPU y capacidad de lectura - escritura consumida por una tarea. Para mas informacion consulte la [documentacion oficial de Streaming Units](https://docs.microsoft.com/es-es/azure/stream-analytics/stream-analytics-streaming-unit-consumption).
+
+>Nota. Para el tutorial se creara un servicio de Stream Analytics con solo 1 Streaming Unit en el mismo grupo de recursos en el que se creo el namespace de Event Hubs.
+
+Una vez creado el servicio se aprecia el siguiente portal desde donde se configuraran las entradas, consultas y salidas (En la seccion <b>Job Topology</b> del menu vertical izquierdo:
+
+![Portal de Stream Analytics](images/ASA2.PNG)
+
+#### Configuracion de entradas
+El tutorial cuenta con solo una entrada de datos: El Event Hub que se creo en pasos anteriores y que ya tiene datos. Para configurar esta entrada es necesario agregar una nueva entrada de tipo Streaming:
+
+![Agregando Event Hub como entrada](images/ASA3.PNG)
+
+Mas alla de proveer un alias para la nueva entrada da datos, el portal de Azure auto completa todos los otros campos necesarios cuando se agrega un Event Hub ya definido en la misma suscripcion. El unico campo no auto completado es el nombre del Consumer Group que se desea utilizar como entrada de datos:
+
+![Agregando Event Hub como entrada](images/ASA4.PNG)
+
+>IMPORTANTE. No olvidar incluir el nombre del Consumer Group creado para esta tarea especifica porque de otra manera se utilizara el Consumer Group creado por defecto en el Event Hub y esta no es una buena practica pensando en que se desea que el servicio de Event Hub sea escalable para ser utilizado por otros servicios.
+
+#### Configuracion de salidas
+Muy similar a la configuracion de entradas. Se debe ingresar a la seccion de <b>Outputs</b> en <b>Job Topology</b> y al momento de definir una nueva salida de debe seleccionar <b>Power BI</b>:
+
+![Agregando Power BI como salida ](images/ASA5.PNG)
+
+Para agregar una table de Power BI como salida es necesario autenticarse contra el servicio de Power BI utilizando el boton <b>Authorize</b>. Una vez se realize la autenticacion se podra seleccionar un Workspace dentro de la suscripcion y definir un dataset y tabla nuevos para volcar toda la data llegando a Stream Analytics desde las diferentes entradas:
+
+![Agregando Power BI como salida ](images/ASA6.PNG)
+
+#### Configuracion de consultas
+Finalmente se debe configurara la consulta que para el caso del tutorial solo agarra toda la data entrante y la vuelca en unica salida:
+
+![Configurando la consulta ](images/ASA7.PNG)
+
+>Nota. Las capacidades de consulta de Stream Analytics van mas alla de solo agarrar data entrante y volcarla en multiples salidas. Para mas informacion sobre como modificar data entrante o decidir que datos saldran a diferentes servicios [se recomienda revisar la documentacion oficial de Querying en Stream Analytics](https://msdn.microsoft.com/en-us/azure/stream-analytics/reference/stream-analytics-query-language-reference).
 
 ## Visualización
 La visualización de datos en real-time implica la mínima latencia posible, desde que el evento es producido hasta que es visualizado. Esta latencia es la suma de las latencias acumuladas en cada etapa: el tiempo de detección del evento en el productor, el tiempo de transferencia, el tiempo de encolamiento, el tiempo de procesamiento, el tiempo de envío e inserción en el dataset del dashboard y el tiempo de refresco en el mismo.
