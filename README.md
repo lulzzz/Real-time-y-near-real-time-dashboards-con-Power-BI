@@ -261,16 +261,16 @@ Muy similar a la configuración de entradas. Se debe ingresar a la sección de <
 
 ![Agregando Power BI como salida ](images/ASA5.PNG)
 
-Para agregar una table de Power BI como salida es necesario autenticarse contra el servicio de Power BI utilizando el boton <b>Authorize</b>. Una vez se realize la autenticacion se podra seleccionar un Workspace dentro de la suscripcion y definir un dataset y tabla nuevos para volcar toda la data llegando a Stream Analytics desde las diferentes entradas:
+Para agregar una table de Power BI como salida es necesario autenticarse contra el servicio de Power BI utilizando el botón <b>Authorize</b>. Una vez se realize la autenticación se podrá seleccionar un Workspace dentro de la suscripción y definir un dataset y tabla nuevos para volcar toda la data llegando a Stream Analytics desde las diferentes entradas:
 
 ![Agregando Power BI como salida ](images/ASA6.PNG)
 
-#### Configuracion de consultas
-Finalmente se debe configurara la consulta que para el caso del tutorial solo agarra toda la data entrante y la vuelca en unica salida:
+#### Configuración de consultas
+Finalmente se debe configurar la consulta que, para el caso del tutorial, sólo tomará toda la data entrante y la vuelca en única salida:
 
 ![Configurando la consulta ](images/ASA7.PNG)
 
->Nota. Las capacidades de consulta de Stream Analytics van mas alla de solo agarrar data entrante y volcarla en multiples salidas. Para mas informacion sobre como modificar data entrante o decidir que datos saldran a diferentes servicios [se recomienda revisar la documentacion oficial de Querying en Stream Analytics](https://msdn.microsoft.com/en-us/azure/stream-analytics/reference/stream-analytics-query-language-reference).
+>Nota. Las capacidades de consulta de Stream Analytics van más allá de sólo tomar data entrante y volcarla en múltiples salidas. Para más información sobre cómo modificar data entrante o decidir qué datos saldrán a diferentes servicios [se recomienda revisar la documentación oficial de Querying en Stream Analytics](https://msdn.microsoft.com/en-us/azure/stream-analytics/reference/stream-analytics-query-language-reference).
 
 ## Visualización
 La visualización de datos en real-time implica la mínima latencia posible, desde que el evento es producido hasta que es visualizado. Esta latencia es la suma de las latencias acumuladas en cada etapa: el tiempo de detección del evento en el productor, el tiempo de transferencia, el tiempo de encolamiento, el tiempo de procesamiento, el tiempo de envío e inserción en el dataset del dashboard y el tiempo de refresco en el mismo.
