@@ -48,8 +48,8 @@ Para crear un Event Hub primero se debe crear un Event Hubs namespace que contie
 ![Creación de un Event Hubs namespace](images/eventHub1.PNG)
 
 #### ¿Qué son Throughput Units?
-Son las unidades de control / rendimiento de tráfico Event Hubs namespace. Cada unidad permite hasta 1MB de entrada y 2MB de salida y un namespace puede soportar hasta 20 unidades por defecto. Al momento de crear un nuevo namespace la opción de auto crecimiento está habilitada para que el namespace de Event Hubs incremente su número de unidades cuando se esté quedando corto de entrada / salida. 
-A falta de un método nativo de auto decrecimiento, se recomienda seguir los pasos sugeridos [en este post](http://tjaddison.com/2017/12/10/Auto-deflating-Event-Hubs-with-a-function-app.html) de un tercero. 
+Son las unidades de control / rendimiento de tráfico Event Hubs namespace. Cada unidad permite hasta 1MB de entrada y 2MB de salida y un namespace puede soportar hasta 20 unidades por defecto. Al momento de crear un nuevo namespace la opción de auto crecimiento está habilitada para que el namespace de Event Hubs incremente su número de unidades cuando se esté quedando corto de entrada / salida.
+A falta de un método nativo de auto decrecimiento, se recomienda seguir los pasos sugeridos [en este post](http://tjaddison.com/2017/12/10/Auto-deflating-Event-Hubs-with-a-function-app.html) de un tercero.
 
 >Nota. Para seguir el tutorial solo será necesario crear un namespace con una unidad y sin auto crecimiento.
 
@@ -67,7 +67,7 @@ La creación de un Event Hub requiere 3 parámetros:
 #### ¿Qué son particiones en un Event Hub?
 Son secuencias ordenadas de eventos dentro de un Event Hub. Están directamente relacionadas al número de lectores concurrentes que se planean para un Event Hub en particular y su cantidad se define únicamente al momento de crear dicho Event Hub. Nueva data entrante se reparte utilizando asignación de Round-Robin entre las particiones disponibles en el Event Hub y si bien se puede definir desde código fuente a que partición se desea escribir datos o leerlos se recomienda que se mantenga el comportamiento de escritura y lectura de datos por default. En el portal de Azure se pueden definir hasta un máximo de 32 particiones por Event Hub, aunque este número puede ser incrementado contactando a soporte.
 
-![Particiones en Event Hub](https://docs.microsoft.com/en-us/azure/event-hubs/media/event-hubs-features/multiple_partitions.png)
+![Particiones en Event Hub](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images//multiple_partitions.png?raw=true)
 
 #### ¿Días de retención de mensajes?
 Los mensajes (eventos enviados) de un Event Hub no pueden ser eliminados de manera directa si no que viven dentro del servicio de 1 a 7 días de acuerdo a la retención que se desee establecer. Por defecto, la política de retención de mensajes es de 1 día.
@@ -234,9 +234,14 @@ Indique un dashboard existente o cree uno nuevo en donde la visualización será
 ![Seleccionar o crear un dashboard](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/pbi_pintoanotherdash.png?raw=true)
 
 > Importante: si el dataset fue definido manualmente (y no a través de Stream Analytics), se debe activar la opción "Historic data analysis", en caso contrario no se podrán crear reportes con ese dataset.
+>
 > ![Seleccionar o crear un dashboard](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/real-time-streaming_0c.png?raw=true)
 
 ## Recomendaciones
+* Hay mucha literatura referida a buenas prácticas de visualización de información y diseño de reportes y dashboards ([Aquí se pueden ver algunas recomendaciones](https://docs.microsoft.com/en-us/power-bi/power-bi-visualization-best-practices) concretas para Power BI). Además de los factores estéticos, volumétricos y conceptuales, con dashboards que muestran información muy dinámica es imperioso seleccionar cuidadosamente qué información es relevante mostrar y procurar reducirla al mínimo.
+* Cuando se trata de streaming data hay otros recursos que pueden resultar más útiles que un dashboard, las alertas. Desde Stream Analytics se pueden generar alertas a través de aplicaciones, mensajes de correo o celular, etc. que pueden llamar la atención ante anomalías o superación de umbrales definidos por el negocio y que requieren una toma de decisiones rápida.
+* Si bien en un dashboard de Power BI muchos tiles ofrecen la posibilidad de disparar alertas simples y personalizadas, el uso extendido de esta característica puede ser un indicador de que existen reglas de negocio que deben ser resueltas antes y -probablemente- sin necesidad de llegar a una solución de visualización.
 
 ## Referencias
-bullets de links a cosas relacionadas.
+* [Real-time streaming](https://docs.microsoft.com/en-us/power-bi/service-real-time-streaming)
+* [Visualization best practices](https://docs.microsoft.com/en-us/power-bi/power-bi-visualization-best-practices)
