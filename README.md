@@ -83,7 +83,7 @@ Por eso se recomienda que cada vez que se desea consumir los eventos de un Event
 
 > Nota. Para seguir el tutorial se creará un Consumer Group que será consumido desde el servicio de Stream Analytics
 
-![Creación de un Consume Group](images/eventHub5.PNG)
+![Creación de un Consumer Group](images/eventHub5.PNG)
 
 ### Generador aleatorio de eventos ###
 Típicamente los eventos son generados por dispositivos o aplicaciones en forma independiente a través del tiempo. Para imitar este flujo de datos se incluye el código fuente de un emulador de eventos con el que se puede completar el ejercicio de visualización en real-time [(Ver carpeta EventHubSender](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/tree/master/EventHubSender) para el código fuente completo)
@@ -107,6 +107,21 @@ El proyecto de consola hecho en C# cumple con la premisa de que se envíen N eve
   </appSettings>
 </configuration>
 ```
+##### Cadena de conexión
+Para obtenerla se debe acceder al portal del Event Hubs Namespace e ingresar en la opción <b>"Shared Access Policies"</b> dentro de la sección <b>Settings</b> en el menú vertical del lado izquierdo del portal:
+
+![Obteniendo la cadena de conexión](images/eventHub6.PNG)
+
+Dentro de la sección de Shared Access Policies se encuentra ya una política por defecto llamada <b>RootManageSharedAccessKey</b> que contiene llaves y cadenas de conexión primarias y secundarias:
+
+![Obteniendo la cadena de conexión](images/eventHub7.PNG)
+
+>Nota. Para seguir el tutorial es suficiente utilizar la cadena de conexión primaria de esta política definida por defecto. Sin embargo se recomienda crear una política diferente con los respectivos permisos de lectura y/o escritura para el escenario sobre el cual se desee trabajar.
+
+##### Nombre de Event Hub
+El nombre del Event Hub a utilizarse se encuentra en la opción <b>Event Hubs</b> de la sección <b>Entities</b> del mismo portal del Event Hubs namespace:
+
+![Obteniendo el nombre del Event Hub](images/eventHub8.PNG)
 
 El código fuente del emulador de eventos cuenta con solo un archivo <b>Program.cs</b> que contiene toda la lógica. Se cuentan con 4 atributos principales:
 - Número de eventos a enviar
