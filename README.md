@@ -2,10 +2,10 @@
 
 Power BI admite como origen de datos un dataset que se alimente en modo streaming. Esta secuencia de datos puede ser visualizada en dashboards en forma desatendida, es decir, sin necesidad de hacer refresco de los tiles.
 
-En estas líneas se explicarán los conceptos y detalle de los pasos para realizar dashboards con Power BI en real-time y near real-time.
-
 ## Resumen
 Además de las series temporales, hay numerosos escenarios donde la posibilidad de contar con información en tiempo real o con unos pocos segundos de retardo es fundamental para la toma de decisiones.
+
+En estas líneas se explicarán los conceptos y detalle de los pasos para realizar dashboards con Power BI en real-time y near real-time utilizando Azure Event Hubs y Azure Stream Analytics. Se provee una aplicación cliente para simular la generación de eventos masivos.
 
 ## Contexto
 Las [arquitecturas lambda](https://en.wikipedia.org/wiki/Lambda_architecture) fueron concebidas para diferenciar información analítica y/o histórica (cold data, cold path, low speed, batch-processing, batch layer, etc.) de la información que requiere un tratamiento inmediato (hot data, hot path, high speed, stream-processing, speed layer, etc.)
@@ -21,7 +21,7 @@ A continuación se analiza un escenario genérico y se describen los pasos para 
 * [Power BI](https://powerbi.microsoft.com/en-us/what-is-power-bi/)
 * [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) (opcional)
 
->Tip. Para este tutorial se crearán recursos de Event Hub y Stream Analytics utilizando el portal web de Azure, sin embargo cabe señalar que todos los recursos pueden ser creados utilizando línea de comando a través del [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+>Tip. Para este tutorial se crearán recursos de Event Hubs y Stream Analytics utilizando el portal web de Azure, sin embargo cabe señalar que todos los recursos pueden ser creados utilizando línea de comandos a través del [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
 ## Fases del proyecto
 Como parte del ciclo de vida de desarrollo del proyecto propio que se esté ejecutando es importante destacar dos fases que son convenientes tener en especial consideración.
@@ -42,34 +42,34 @@ Como se mencionó anteriormente hablar de real-time o near real-time implica un 
 Azure Event Hubs es un servicio para la ingestión masiva de eventos, en este tutorial se empleará como vía de entrada para los datos. Event Hubs posee varias características interesantes para soportar múltiples escenarios de control de flujo, contextos de publicación-subscripción, etc. Más información [aquí](https://docs.microsoft.com/es-es/azure/event-hubs/event-hubs-what-is-event-hubs).
 
 ### Crear un Event Hub en Azure
->Tip. Antes de crear un Event Hub en una cuenta de Azure se recomienda primero crear un nuevo Resource group separado alejado de entornos de test y/o producción. 
+>Tip. Antes de crear un Event Hub en una cuenta de Azure se recomienda primero crear un nuevo Resource Group separado alejado de entornos de test y/o producción.
 
-Para crear un Event Hub primero se debe crear un Event Hubs namespace que contiene múltiples instancias de Event Hubs. En el portal de Azure se debe buscar <i>"Event Hubs"</i> en la sección de <i>Create a resource</i>:
+Para crear un Event Hub primero se debe crear un Event Hubs Namespace que contiene múltiples instancias de Event Hubs. En el portal de Azure se debe buscar <i>"Event Hubs"</i> en la sección de <i>Create a resource</i>:
 ![Creación de un Event Hubs namespace](images/eventHub1.PNG)
 
 #### ¿Qué son Throughput Units?
-Son las unidades de control / rendimiento de tráfico Event Hubs namespace. Cada unidad permite hasta 1MB de entrada y 2MB de salida y un namespace puede soportar hasta 20 unidades por defecto. Al momento de crear un nuevo namespace la opción de auto crecimiento está habilitada para que el namespace de Event Hubs incremente su número de unidades cuando se esté quedando corto de entrada / salida.
+Son las unidades de control/rendimiento de tráfico Event Hubs namespace. Cada unidad permite hasta 1MB de entrada y 2MB de salida y un namespace puede soportar hasta 20 unidades por defecto. Al momento de crear un nuevo namespace la opción de auto crecimiento está habilitada para que el namespace de Event Hubs incremente su número de unidades cuando se esté quedando corto de entrada/salida.
 A falta de un método nativo de auto decrecimiento, se recomienda seguir los pasos sugeridos [en este post](http://tjaddison.com/2017/12/10/Auto-deflating-Event-Hubs-with-a-function-app.html) de un tercero.
 
->Nota. Para seguir el tutorial solo será necesario crear un namespace con una unidad y sin auto crecimiento.
+>Nota. Para seguir el tutorial sólo será necesario crear un namespace con una unidad y sin auto crecimiento.
 
 Para crear un Event Hub se ingresa al portal <b>Overview</b> de un Event Hubs namespace y se hace click en la parte superior izquierda donde se aprecia la opción <b>"+ Event Hub"</b>:
 
 ![Creación de un Event Hub](images/eventHub2.PNG)
 
-La creación de un Event Hub requiere 3 parámetros: 
+La creación de un Event Hub requiere 3 parámetros:
 - Nombre del event hub
-- Número de particiones 
+- Número de particiones
 - Número de días de retención para los mensajes
 
 ![Creación de un Event Hub](images/eventHub3.PNG)
 
 #### ¿Qué son particiones en un Event Hub?
-Son secuencias ordenadas de eventos dentro de un Event Hub. Están directamente relacionadas al número de lectores concurrentes que se planean para un Event Hub en particular y su cantidad se define únicamente al momento de crear dicho Event Hub. Nueva data entrante se reparte utilizando asignación de Round-Robin entre las particiones disponibles en el Event Hub y si bien se puede definir desde código fuente a que partición se desea escribir datos o leerlos se recomienda que se mantenga el comportamiento de escritura y lectura de datos por default. En el portal de Azure se pueden definir hasta un máximo de 32 particiones por Event Hub, aunque este número puede ser incrementado contactando a soporte.
+Son secuencias ordenadas de eventos dentro de un Event Hub. Están directamente relacionadas al número de lectores concurrentes que se planean para un Event Hub en particular y su cantidad se define únicamente al momento de crear dicho Event Hub. Nueva data entrante se reparte utilizando asignación de Round-Robin entre las particiones disponibles en el Event Hub y si bien se puede definir desde código fuente a que partición se desea escribir datos o leerlos, se recomienda que se mantenga el comportamiento de escritura y lectura de datos por default. En el portal de Azure se pueden definir hasta un máximo de 32 particiones por Event Hub, aunque se aclara que este número puede ser incrementado contactando a soporte.
 
 ![Particiones en Event Hub](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images//multiple_partitions.png?raw=true)
 
-#### ¿Días de retención de mensajes?
+#### Días de retención de mensajes
 Los mensajes (eventos enviados) de un Event Hub no pueden ser eliminados de manera directa si no que viven dentro del servicio de 1 a 7 días de acuerdo a la retención que se desee establecer. Por defecto, la política de retención de mensajes es de 1 día.
 
 >Nota. Para seguir el tutorial sólo será necesario mantener los valores por defector de la creación de un Event Hub: 2 particiones y política de retención de mensajes de 1 día.
@@ -77,14 +77,14 @@ Los mensajes (eventos enviados) de un Event Hub no pueden ser eliminados de mane
 <h1>ToDo: Descripción del uso de Consumer Groups</h1>
 
 ### Generador aleatorio de eventos ###
-Típicamente los eventos son generados por dispositivos o aplicaciones en forma independiente a través del tiempo. Para imitar este flujo de datos se incluye el código fuente de un emulador de eventos con el que se puede completar el ejercicio de visualización en real-time [(Ver carpeta EventHubSender](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/tree/master/EventHubSender) para el código fuente completo)
+Típicamente los eventos son generados por dispositivos o aplicaciones en forma independiente a través del tiempo. Para imitar este flujo de datos se incluye el código fuente de un emulador de eventos con el que se puede completar el ejercicio de visualización en real-time [(ver carpeta EventHubSender](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/tree/master/EventHubSender) para el código fuente completo).
 
-Se generan datos aleatorios de un barco con los siguientes atributos:
+Se generan datos aleatorios simulando una embarcación que navega en altamar con los siguientes atributos:
 - Temperatura de 4 bodegas (valores numéricos que van de 15 - 20)
 - Velocidad de barco (valores numéricos que van de 80-120)
 - Latitud y longitud del barco (valores numéricos que representan una posición en el mar Caribe cerca a Cartagena, Colombia)
 - Tiempo general, hora, minuto y segundo en el que se envían los datos
-- ID de barco (valores numéricos que van de 1-5) 
+- ID de barco (valores numéricos que van de 1-5)
 
 #### Código fuente ####
 El proyecto de consola hecho en C# cumple con la premisa de que se envíen N eventos generados cada M milisegundos y funciona toda vez que una cadena de conexión a un EventHub Namespace y el nombre de un EventHub que exista dentro de ese Namespace hayan sido definidos en el archivo <b>App.Config</b>:
@@ -99,7 +99,7 @@ El proyecto de consola hecho en C# cumple con la premisa de que se envíen N eve
 </configuration>
 ```
 
-El código fuente del emulador de eventos cuenta con solo un archivo <b>Program.cs</b> que contiene toda la lógica. Se cuentan con 4 atributos principales:
+El código fuente del emulador de eventos cuenta con sólo un archivo <b>Program.cs</b> que contiene toda la lógica. Se cuentan con 4 atributos principales:
 - Número de eventos a enviar
 - Milisegundos que deben pasar entre cada evento
 - Cadena de conexión de un EventHub Namespace
@@ -115,7 +115,7 @@ class Program
 }
 ```
 
-El método principal consta de 3 lineas de código en las que se definen el número de eventos, milisegundos entre eventos y llamada al método <b>SendEvents()</b> que se encarga de mandar datos al servicio de EventHub:
+El método principal consta de 3 líneas de código en las que se definen el número de eventos, milisegundos entre eventos y llamada al método <b>SendEvents()</b> que se encarga de mandar datos al servicio de EventHub:
 ```csharp
 static void Main(string[] args)
 {
@@ -188,7 +188,6 @@ private static string PrepareRandomData(Random ran)
     return message;
 }
 ```
-Desarrollar paso a paso cómo crear un event hubs, la aplicación cliente e intercalar conceptos y tips
 
 ## Análisis de streaming de datos
 Desarrollar paso a paso una query en Stream Analytics
