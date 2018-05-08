@@ -21,6 +21,8 @@ A continuación se analiza un escenario genérico y se describen los pasos para 
 * [Power BI](https://powerbi.microsoft.com/en-us/what-is-power-bi/)
 * [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) (opcional)
 
+Este documento asume que el lector tiene conocimientos básicos de operación de Power BI.
+
 >Tip. Para este tutorial se crearán recursos de Event Hubs y Stream Analytics utilizando el portal web de Azure, sin embargo cabe señalar que todos los recursos pueden ser creados utilizando línea de comandos a través del [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
 ## Fases del proyecto
@@ -36,7 +38,7 @@ Es importante hacer una consideración de alto nivel con respecto a los requisit
 ## Arquitectura de alto nivel
 Como se mencionó anteriormente hablar de real-time o near real-time implica un modelo dinámico diseñado para tener en cuenta la menor latencia posible en el flujo de datos. Las técnicas y herramientas empleadas aquí siguen el flujo hot-path de una arquitectura [lambda](https://en.wikipedia.org/wiki/Lambda_architecture), tal como se describe a continuación.
 
-![Diagrama de arquitectura](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/diagram.JPG?raw=true)
+![Diagrama de arquitectura](images/diagram.JPG?raw=true)
 
 ## Ingestión y encolamiento
 Azure Event Hubs es un servicio para la ingestión masiva de eventos, en este tutorial se empleará como vía de entrada para los datos. Event Hubs posee varias características interesantes para soportar múltiples escenarios de control de flujo, contextos de publicación-subscripción, etc. Más información [aquí](https://docs.microsoft.com/es-es/azure/event-hubs/event-hubs-what-is-event-hubs).
@@ -55,19 +57,19 @@ A falta de un método nativo de auto decrecimiento, se recomienda seguir los pas
 
 Para crear un Event Hub se ingresa al portal <b>Overview</b> de un Event Hubs namespace y se hace click en la parte superior izquierda donde se aprecia la opción <b>"+ Event Hub"</b>:
 
-![Creación de un Event Hub](images/eventHub2.PNG)
+<img src="images/eventHub2.PNG" width="660px"/>
 
 La creación de un Event Hub requiere 3 parámetros:
 - Nombre del event hub
 - Número de particiones
 - Número de días de retención para los mensajes
 
-![Creación de un Event Hub](images/eventHub3.PNG)
+<img src="images/eventHub3.PNG" width="660px"/>
 
 #### ¿Qué son particiones en un Event Hub?
 Son secuencias ordenadas de eventos dentro de un Event Hub. Están directamente relacionadas al número de lectores concurrentes que se planean para un Event Hub en particular y su cantidad se define únicamente al momento de crear dicho Event Hub. Nueva data entrante se reparte utilizando asignación de Round-Robin entre las particiones disponibles en el Event Hub y si bien se puede definir desde código fuente a que partición se desea escribir datos o leerlos, se recomienda que se mantenga el comportamiento de escritura y lectura de datos por default. En el portal de Azure se pueden definir hasta un máximo de 32 particiones por Event Hub, aunque se aclara que este número puede ser incrementado contactando a soporte.
 
-![Particiones en Event Hub](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images//multiple_partitions.png?raw=true)
+![Particiones en Event Hub](images//multiple_partitions.png)
 
 #### Días de retención de mensajes
 Los mensajes (eventos enviados) de un Event Hub no pueden ser eliminados de manera directa si no que viven dentro del servicio de 1 a 7 días de acuerdo a la retención que se desee establecer. Por defecto, la política de retención de mensajes es de 1 día.
@@ -75,9 +77,9 @@ Los mensajes (eventos enviados) de un Event Hub no pueden ser eliminados de mane
 >Nota. Para seguir el tutorial sólo será necesario mantener los valores por defector de la creación de un Event Hub: 2 particiones y política de retención de mensajes de 1 día.
 
 #### Consumer groups
-![Portal de un Event Hub](images/eventHub4.PNG)
+<img src="images/eventHub4.PNG" width="660px"/>
 Los <b>Consumer Groups</b> son vistas (estados, posiciones) de un Event Hub y son el mecanismo de consumo de los eventos dentro de dicho Event Hub. Mediante estos Consumer Groups múltiples aplicativos / servicios pueden consumir los eventos a su propio ritmo y de manera independientemente sin afectar al resto de aplicativos.
-Por eso se recomienda que cada vez que se desea consumir los eventos de un Event Hub se debe crear un nuevo Consumer Group para esa tarea. 
+Por eso se recomienda que cada vez que se desea consumir los eventos de un Event Hub se debe crear un nuevo Consumer Group para esa tarea.
 - Cada Consumer Group puede soportar hasta 5 lectores dentro de una partición. 
 - Un Event Hub tiene siempre un Consumer Group por defecto y puede tener hasta 20 en la capa Standard
 
@@ -214,7 +216,62 @@ private static string PrepareRandomData(Random ran)
 ```
 
 ## Análisis de streaming de datos
-Desarrollar paso a paso una query en Stream Analytics
+Ahora que se cuentan con datos generados listos para ser consumidos desde Event Hub se procede a consumirlos desde el servicio de Stream Analytics.
+
+### Azure Stream Analytics
+Es un servicio de procesamiento de eventos en tiempo real sobre datos de streaming que ademas permite aplicar calculos o modificaciones a los eventos entrantes:
+
+![Stream Analytics en accion](https://docs.microsoft.com/es-es/azure/stream-analytics/media/stream-analytics-introduction/stream_analytics_intro_pipeline.png)
+
+Por dentro, Stream Analytics esta compuesto por multiples componentes de entre los cuales se cuentan con 3 principales:
+- Entradas de datos (Inputs)
+- Seccion de consulta de datos (Query)
+- Salidas de datos (Outputs)
+
+>Nota. Para este tutorial se tiene a Event Hub como entrada de datos y Power BI como salida de datos mientras que en la seccion de consulta / modificacion de datos no se hace ninguna alteracion.
+
+Para mas informacion [consulte la documentacion oficial](https://docs.microsoft.com/es-es/azure/stream-analytics/stream-analytics-introduction).
+
+### Creacion del servicio de Azure Stream Analytics
+En el portal de Azure se debe buscar "Stream Analytics" en la sección <b>Create a resource</b>: 
+
+![Creación de Stream Analytics](images/ASA1.PNG)
+
+#### ¿Que son Streaming Units?
+Son la representancion de unidades de computo consumidas cuando se ejecuta una tarea. En esencia, un Streaming Unit es la manera relativa de medir la mezcla de memoria RAM, CPU y capacidad de lectura - escritura consumida por una tarea. Para mas informacion consulte la [documentacion oficial de Streaming Units](https://docs.microsoft.com/es-es/azure/stream-analytics/stream-analytics-streaming-unit-consumption).
+
+>Nota. Para el tutorial se creara un servicio de Stream Analytics con solo 1 Streaming Unit en el mismo grupo de recursos en el que se creo el namespace de Event Hubs.
+
+Una vez creado el servicio se aprecia el siguiente portal desde donde se configuraran las entradas, consultas y salidas (En la seccion <b>Job Topology</b> del menu vertical izquierdo:
+
+![Portal de Stream Analytics](images/ASA2.PNG)
+
+#### Configuracion de entradas
+El tutorial cuenta con solo una entrada de datos: El Event Hub que se creo en pasos anteriores y que ya tiene datos. Para configurar esta entrada es necesario agregar una nueva entrada de tipo Streaming:
+
+![Agregando Event Hub como entrada](images/ASA3.PNG)
+
+Mas alla de proveer un alias para la nueva entrada da datos, el portal de Azure auto completa todos los otros campos necesarios cuando se agrega un Event Hub ya definido en la misma suscripcion. El unico campo no auto completado es el nombre del Consumer Group que se desea utilizar como entrada de datos:
+
+![Agregando Event Hub como entrada](images/ASA4.PNG)
+
+>IMPORTANTE. No olvidar incluir el nombre del Consumer Group creado para esta tarea especifica porque de otra manera se utilizara el Consumer Group creado por defecto en el Event Hub y esta no es una buena practica pensando en que se desea que el servicio de Event Hub sea escalable para ser utilizado por otros servicios.
+
+#### Configuracion de salidas
+Muy similar a la configuracion de entradas. Se debe ingresar a la seccion de <b>Outputs</b> en <b>Job Topology</b> y al momento de definir una nueva salida de debe seleccionar <b>Power BI</b>:
+
+![Agregando Power BI como salida ](images/ASA5.PNG)
+
+Para agregar una table de Power BI como salida es necesario autenticarse contra el servicio de Power BI utilizando el boton <b>Authorize</b>. Una vez se realize la autenticacion se podra seleccionar un Workspace dentro de la suscripcion y definir un dataset y tabla nuevos para volcar toda la data llegando a Stream Analytics desde las diferentes entradas:
+
+![Agregando Power BI como salida ](images/ASA6.PNG)
+
+#### Configuracion de consultas
+Finalmente se debe configurara la consulta que para el caso del tutorial solo agarra toda la data entrante y la vuelca en unica salida:
+
+![Configurando la consulta ](images/ASA7.PNG)
+
+>Nota. Las capacidades de consulta de Stream Analytics van mas alla de solo agarrar data entrante y volcarla en multiples salidas. Para mas informacion sobre como modificar data entrante o decidir que datos saldran a diferentes servicios [se recomienda revisar la documentacion oficial de Querying en Stream Analytics](https://msdn.microsoft.com/en-us/azure/stream-analytics/reference/stream-analytics-query-language-reference).
 
 ## Visualización
 La visualización de datos en real-time implica la mínima latencia posible, desde que el evento es producido hasta que es visualizado. Esta latencia es la suma de las latencias acumuladas en cada etapa: el tiempo de detección del evento en el productor, el tiempo de transferencia, el tiempo de encolamiento, el tiempo de procesamiento, el tiempo de envío e inserción en el dataset del dashboard y el tiempo de refresco en el mismo.
@@ -224,13 +281,15 @@ Normalmente las visualizaciones de Power BI requieren algún tipo de cálculo o 
 ### Real-time
 En esta solución, la latencia acumulada entre el momento del encolamiento hasta el del refresco en el dasboard es del orden de los **2 segundos**.
 
-![Agregar nuevo tile](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/custom-streaming-data.png?raw=true)
+![Agregar nuevo tile](images/custom-streaming-data.png)
 
-![Agregar nuevo tile](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/your-streaming-dataset.png?raw=true)
+Seleccione el dataset definido previamente como output de Stream Analytics.
+
+![Agregar nuevo tile](images/your-streaming-dataset.png)
 
 Seleccione el tipo de visualización y continue la configuración de acuerdo al mismo.
 
-![Agregar nuevo tile](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/pbi-dashboard-fraudulent-calls-finished.png?raw=true)
+![Agregar nuevo tile](images/pbi-dashboard-fraudulent-calls-finished.png)
 
 Estas visualizaciones se actualizan una vez por segundo.
 
@@ -241,15 +300,15 @@ Una vez que Stream Analytics ha creado el dataset, éste puede ser utilizado en 
 
 Para ello, marque el ícono de "Pin" en la visualización que desea exponer:
 
-![Anclar un tile](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/power-bi-pin.png?raw=true)
+![Anclar un tile](images/power-bi-pin.png)
 
 Indique un dashboard existente o cree uno nuevo en donde la visualización será publicada:
 
-![Seleccionar o crear un dashboard](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/pbi_pintoanotherdash.png?raw=true)
+![Seleccionar o crear un dashboard](images/pbi_pintoanotherdash.png)
 
 > Importante: si el dataset fue definido manualmente (y no a través de Stream Analytics), se debe activar la opción "Historic data analysis", en caso contrario no se podrán crear reportes con ese dataset.
->
-> ![Seleccionar o crear un dashboard](https://github.com/CSELATAM/Real-time-y-near-real-time-dashboards-con-Power-BI/blob/master/images/real-time-streaming_0c.png?raw=true)
+
+![Seleccionar o crear un dashboard](images/real-time-streaming_0c.png)
 
 ## Recomendaciones
 * Hay mucha literatura referida a buenas prácticas de visualización de información y diseño de reportes y dashboards ([Aquí se pueden ver algunas recomendaciones](https://docs.microsoft.com/en-us/power-bi/power-bi-visualization-best-practices) concretas para Power BI). Además de los factores estéticos, volumétricos y conceptuales, con dashboards que muestran información muy dinámica es imperioso seleccionar cuidadosamente qué información es relevante mostrar y procurar reducirla al mínimo.
@@ -259,3 +318,4 @@ Indique un dashboard existente o cree uno nuevo en donde la visualización será
 ## Referencias
 * [Real-time streaming](https://docs.microsoft.com/en-us/power-bi/service-real-time-streaming)
 * [Visualization best practices](https://docs.microsoft.com/en-us/power-bi/power-bi-visualization-best-practices)
+* [Introudction to Azure Stream Analytics](https://docs.microsoft.com/es-es/azure/stream-analytics/stream-analytics-introduction)
