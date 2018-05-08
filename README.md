@@ -219,46 +219,45 @@ private static string PrepareRandomData(Random ran)
 Ahora que se cuentan con datos generados listos para ser consumidos desde Event Hub se procede a consumirlos desde el servicio de Stream Analytics.
 
 ### Azure Stream Analytics
-Es un servicio de procesamiento de eventos en tiempo real sobre datos de streaming que ademas permite aplicar calculos o modificaciones a los eventos entrantes:
+Es un servicio de procesamiento de eventos en tiempo real sobre datos de streaming que, además, permite aplicar cálculos o modificaciones a los eventos entrantes. En el diagrama de arquitectura presentado anteriormente puede verse su rol en el conjunto del proceso.
 
-![Stream Analytics en accion](https://docs.microsoft.com/es-es/azure/stream-analytics/media/stream-analytics-introduction/stream_analytics_intro_pipeline.png)
+Por dentro, Stream Analytics está compuesto por múltiples componentes de entre los cuales se cuentan con 3 principales:
 
-Por dentro, Stream Analytics esta compuesto por multiples componentes de entre los cuales se cuentan con 3 principales:
 - Entradas de datos (Inputs)
-- Seccion de consulta de datos (Query)
+- Sección de consulta de datos (Query)
 - Salidas de datos (Outputs)
 
->Nota. Para este tutorial se tiene a Event Hub como entrada de datos y Power BI como salida de datos mientras que en la seccion de consulta / modificacion de datos no se hace ninguna alteracion.
+>Nota. Para este tutorial se tiene a Event Hub como entrada de datos y Power BI como salida de datos mientras que en la sección de consulta/modificacion de datos no se hace ninguna alteración.
 
-Para mas informacion [consulte la documentacion oficial](https://docs.microsoft.com/es-es/azure/stream-analytics/stream-analytics-introduction).
+Para más información [consulte la documentación oficial](https://docs.microsoft.com/es-es/azure/stream-analytics/stream-analytics-introduction).
 
-### Creacion del servicio de Azure Stream Analytics
-En el portal de Azure se debe buscar "Stream Analytics" en la sección <b>Create a resource</b>: 
+### Creación del servicio de Azure Stream Analytics
+En el portal de Azure se debe buscar "Stream Analytics" en la sección <b>Create a resource</b>:
 
 ![Creación de Stream Analytics](images/ASA1.PNG)
 
-#### ¿Que son Streaming Units?
-Son la representancion de unidades de computo consumidas cuando se ejecuta una tarea. En esencia, un Streaming Unit es la manera relativa de medir la mezcla de memoria RAM, CPU y capacidad de lectura - escritura consumida por una tarea. Para mas informacion consulte la [documentacion oficial de Streaming Units](https://docs.microsoft.com/es-es/azure/stream-analytics/stream-analytics-streaming-unit-consumption).
+#### ¿Qué son Streaming Units?
+Son la representancion de unidades de cómputo consumidas cuando se ejecuta una tarea. En esencia, un Streaming Unit es la manera relativa de medir la mezcla de memoria RAM, CPU y capacidad de lectura - escritura consumida por una tarea. Para más informacion consulte la [documentación oficial de Streaming Units](https://docs.microsoft.com/es-es/azure/stream-analytics/stream-analytics-streaming-unit-consumption).
 
->Nota. Para el tutorial se creara un servicio de Stream Analytics con solo 1 Streaming Unit en el mismo grupo de recursos en el que se creo el namespace de Event Hubs.
+>Nota. Para el tutorial se creará un servicio de Stream Analytics con sólo 1 Streaming Unit en el mismo grupo de recursos en el que se creó el namespace de Event Hubs.
 
-Una vez creado el servicio se aprecia el siguiente portal desde donde se configuraran las entradas, consultas y salidas (En la seccion <b>Job Topology</b> del menu vertical izquierdo:
+Una vez creado el servicio se aprecia el siguiente portal desde donde se configurarán las entradas, consultas y salidas (En la seccion <b>Job Topology</b> del menú vertical izquierdo:
 
 ![Portal de Stream Analytics](images/ASA2.PNG)
 
 #### Configuracion de entradas
-El tutorial cuenta con solo una entrada de datos: El Event Hub que se creo en pasos anteriores y que ya tiene datos. Para configurar esta entrada es necesario agregar una nueva entrada de tipo Streaming:
+El tutorial cuenta con sólo una entrada de datos: el Event Hub que se creó en pasos anteriores y que ya tiene datos. Para configurar esta entrada es necesario agregar una nueva entrada de tipo Streaming:
 
 ![Agregando Event Hub como entrada](images/ASA3.PNG)
 
-Mas alla de proveer un alias para la nueva entrada da datos, el portal de Azure auto completa todos los otros campos necesarios cuando se agrega un Event Hub ya definido en la misma suscripcion. El unico campo no auto completado es el nombre del Consumer Group que se desea utilizar como entrada de datos:
+Más allá de proveer un alias para la nueva entrada da datos, el portal de Azure auto completa todos los otros campos necesarios cuando se agrega un Event Hub ya definido en la misma suscripción. El único campo no auto completado es el nombre del Consumer Group que se desea utilizar como entrada de datos:
 
 ![Agregando Event Hub como entrada](images/ASA4.PNG)
 
->IMPORTANTE. No olvidar incluir el nombre del Consumer Group creado para esta tarea especifica porque de otra manera se utilizara el Consumer Group creado por defecto en el Event Hub y esta no es una buena practica pensando en que se desea que el servicio de Event Hub sea escalable para ser utilizado por otros servicios.
+>IMPORTANTE. No olvidar incluir el nombre del Consumer Group creado para esta tarea específica porque de otra manera se utilizará el Consumer Group creado por defecto en el Event Hub y ésta no es una buena práctica pensando en que se desea que el servicio de Event Hub sea escalable para ser utilizado por otros servicios.
 
-#### Configuracion de salidas
-Muy similar a la configuracion de entradas. Se debe ingresar a la seccion de <b>Outputs</b> en <b>Job Topology</b> y al momento de definir una nueva salida de debe seleccionar <b>Power BI</b>:
+#### Configuración de salidas
+Muy similar a la configuración de entradas. Se debe ingresar a la sección de <b>Outputs</b> en <b>Job Topology</b> y, al momento de definir una nueva salida, de debe seleccionar <b>Power BI</b>:
 
 ![Agregando Power BI como salida ](images/ASA5.PNG)
 
